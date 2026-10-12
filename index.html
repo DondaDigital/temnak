@@ -4,16 +4,16 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>TEMNAK – Official Merch</title>
-<meta name="description" content="TEMNAK – oficiální merch a streetwear. Mikiny, trička, obrázky a šperky. Official merch and streetwear.">
+<meta name="description" id="metaDesc" content="TEMNAK – oficiální merch a streetwear. Mikiny, trička, obrázky a šperky.">
 <meta property="og:title" content="TEMNAK – Official Merch">
-<meta property="og:description" content="TEMNAK – oficiální merch a streetwear.">
+<meta property="og:description" id="ogDesc" content="TEMNAK – oficiální merch a streetwear.">
 <meta property="og:type" content="website">
 <meta property="og:image" content="temnak-logo.png">
 <meta name="theme-color" content="#ffffff">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <style>
-:root{--bg:#fff;--fg:#121212;--mute:rgba(18,18,18,.62);--line:rgba(18,18,18,.1);--frame:#f3f3f3;--hdr:76px;--ease:cubic-bezier(.2,.7,.2,1);box-sizing:border-box}
+:root{--bg:#fff;--fg:#121212;--mute:rgba(18,18,18,.62);--line:rgba(18,18,18,.1);--frame:#f3f3f3;--hdr:76px;--ease:cubic-bezier(.2,.7,.2,1);--bagzoom:2;box-sizing:border-box}
 *,*::before,*::after{box-sizing:inherit;margin:0;padding:0}
 html{scroll-behavior:smooth;scroll-padding-top:var(--hdr)}
 body{font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;background:var(--bg);color:var(--fg);line-height:1.5;overflow-x:hidden;-webkit-font-smoothing:antialiased;font-size:15px}
@@ -44,6 +44,15 @@ nav.d a:hover::after{transform:scaleX(1)}
 .ib{width:44px;height:44px;display:grid;place-items:center;position:relative}
 .ib svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.5;transition:transform .3s var(--ease)}
 .ib:hover svg{transform:translateY(-2px)}
+/* tlačítko košíku = logo tašky TEMNAK (obrázek temnak-logo.png).
+   --bagzoom přiblíží logo uvnitř čtverce (soubor má kolem loga bílý okraj). Má-li váš soubor logo oříznuté těsně, nastavte --bagzoom:1 */
+.cartlogo{width:52px;height:52px}
+.cartlogo .bag{width:52px;height:52px;overflow:hidden;display:block;transition:transform .3s var(--ease)}
+.cartlogo .bag img{width:100%;height:100%;object-fit:contain;transform:scale(var(--bagzoom))}
+.cartlogo:hover .bag{transform:translateY(-2px)}
+.cartlogo svg{display:none}
+.cartlogo.nologo .bag{display:none}
+.cartlogo.nologo svg{display:block}
 .count{position:absolute;top:4px;right:2px;min-width:17px;height:17px;border-radius:9px;background:var(--fg);color:#fff;font-size:10px;font-weight:600;display:grid;place-items:center;padding:0 4px}
 .count[hidden]{display:none}
 .bump{animation:bump .4s}
@@ -61,6 +70,7 @@ nav.d a:hover::after{transform:scaleX(1)}
   .logo{font-size:20px;letter-spacing:.26em;padding-left:.26em}
   .lang{display:none}
   .mnav .lang{display:block;margin-top:8px;font-size:18px}
+  .cartlogo,.cartlogo .bag{width:46px;height:46px}
 }
 @media(max-width:360px){
   .logo{font-size:17px;letter-spacing:.22em;padding-left:.22em}
@@ -109,29 +119,20 @@ section{padding:clamp(32px,5vw,64px) 0}
   .cats{display:none;border:1px solid var(--line);border-top:0;padding:6px 16px 10px}
   .cats.open{display:flex;animation:fade .25s}
 }
-.tb{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:22px;min-height:66px}
+.tb{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:22px;min-height:64px;flex-wrap:wrap}
 .tb h2{font-size:clamp(22px,2.2vw,28px);font-weight:400;line-height:1.1}
 .tb .cc{font-size:13px;color:var(--mute);margin-top:2px}
 .ratenote{font-size:12px;color:var(--mute);margin:-12px 0 20px;text-align:right}
 .ratenote[hidden]{display:none}
 
-/* circular currency selector */
-.curx{position:relative;flex:none}
-.curx-btn{width:66px;height:66px;border-radius:50%;border:1px solid var(--fg);display:grid;place-items:center;position:relative;background:var(--bg);transition:background .3s,color .3s,transform .3s var(--ease);z-index:2}
-.curx-btn:hover,.curx.open .curx-btn{background:var(--fg);color:#fff}
-.curx-btn:active{transform:scale(.94)}
-.curx-btn svg{position:absolute;inset:0;width:100%;height:100%;animation:spin 14s linear infinite;animation-play-state:paused}
-.curx-btn:hover svg,.curx.open .curx-btn svg{animation-play-state:running}
-.curx-btn svg text{font-size:10.5px;letter-spacing:2.2px;fill:currentColor;text-transform:uppercase}
-.curx-btn b{font-size:13px;font-weight:600;letter-spacing:.04em}
-@keyframes spin{to{transform:rotate(360deg)}}
-.curx-opts{position:absolute;right:74px;top:50%;transform:translateY(-50%);display:flex;gap:8px;list-style:none;z-index:3}
-.curx-opts button{width:48px;height:48px;border-radius:50%;border:1px solid var(--line);background:var(--bg);font-size:12px;font-weight:500;opacity:0;transform:translateX(26px) scale(.7);pointer-events:none;transition:opacity .25s,transform .4s var(--ease),background .2s,color .2s,border-color .2s}
-.curx.open .curx-opts button{opacity:1;transform:none;pointer-events:auto}
-.curx.open .curx-opts li:nth-child(2) button{transition-delay:.04s,.04s,0s,0s,0s}
-.curx.open .curx-opts li:nth-child(1) button{transition-delay:.08s,.08s,0s,0s,0s}
-.curx-opts button:hover{border-color:var(--fg)}
-.curx-opts button[aria-pressed=true]{background:var(--fg);color:#fff;border-color:var(--fg)}
+/* přepínač měn – segmentová pilulka s plynule se posouvající volbou */
+.curx{display:flex;flex-direction:column;align-items:flex-end;gap:7px;flex:none}
+.curx-l{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--mute);line-height:1}
+.curx-seg{position:relative;display:grid;grid-template-columns:repeat(3,1fr);padding:3px;border:1px solid var(--fg);border-radius:999px;background:var(--bg);box-shadow:0 8px 22px -16px rgba(18,18,18,.5)}
+.curx-seg::before{content:"";position:absolute;top:3px;bottom:3px;left:3px;width:calc((100% - 6px) / 3);border-radius:999px;background:var(--fg);transform:translateX(calc(var(--pos,0) * 100%));transition:transform .45s var(--ease)}
+.curx-seg button{position:relative;z-index:1;min-width:56px;height:34px;padding:0 6px;border-radius:999px;font-size:12px;font-weight:600;letter-spacing:.08em;color:var(--fg);transition:color .3s}
+.curx-seg button:hover{opacity:.7}
+.curx-seg button[aria-pressed=true]{color:#fff;opacity:1}
 
 .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:28px 14px}
 @media(min-width:700px){.grid{grid-template-columns:repeat(3,1fr);gap:36px 18px}}
@@ -318,14 +319,15 @@ footer{border-top:1px solid var(--line);padding:44px 0 22px;background:var(--bg)
           <svg viewBox="0 0 24 24"><path d="M4 8h16M4 16h16"/></svg>
         </button>
       </div>
-      <a href="./" class="logo" id="homeLink" aria-label="TEMNAK – domů" data-testid="header-logo-link">TEMNAK</a>
+      <a href="./" class="logo" id="homeLink" data-al="home" aria-label="TEMNAK – domů" data-testid="header-logo-link">TEMNAK</a>
       <div class="right">
         <span class="lang"><button data-lang="cs" aria-pressed="true" data-testid="lang-cs-button">CS</button><i>/</i><button data-lang="en" aria-pressed="false" data-testid="lang-en-button">EN</button></span>
         <button class="ib" id="acctBtn" data-al="account" aria-label="Účet" data-testid="account-button">
           <svg viewBox="0 0 24 24"><circle cx="12" cy="8.5" r="3.5"/><path d="M5 20c.8-3.6 3.6-5.5 7-5.5s6.2 1.9 7 5.5"/></svg>
         </button>
-        <button class="ib" id="cartBtn" data-al="cart" aria-label="Košík" data-testid="cart-button">
-          <svg viewBox="0 0 24 24"><path d="M8.5 9V7.2a3.5 3.5 0 0 1 7 0V9"/><path d="M3 9h18l-.6 1.6L18.5 20h-13L3.6 10.6Z"/></svg>
+        <button class="ib cartlogo" id="cartBtn" data-al="cart" aria-label="Nákupní taška" data-testid="cart-button">
+          <span class="bag"><img src="temnak-logo.png" alt="" width="52" height="52" onerror="this.closest('.cartlogo').classList.add('nologo')"></span>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.5 9V7.2a3.5 3.5 0 0 1 7 0V9"/><path d="M3 9h18l-.6 1.6L18.5 20h-13L3.6 10.6Z"/></svg>
           <span class="count" id="count" hidden data-testid="cart-count">0</span>
         </button>
       </div>
@@ -343,9 +345,9 @@ footer{border-top:1px solid var(--line);padding:44px 0 22px;background:var(--bg)
   <h1 class="sr">TEMNAK – Official Merch</h1>
   <div class="hero" id="hero" role="region" aria-roledescription="carousel" aria-label="TEMNAK" data-testid="hero-slideshow">
     <div class="ctrl" id="ctrl">
-      <button class="prev" aria-label="Previous" data-testid="slide-prev"><svg viewBox="0 0 24 24"><path d="m15 5-7 7 7 7"/></svg></button>
+      <button class="prev" data-al="prev" aria-label="Předchozí" data-testid="slide-prev"><svg viewBox="0 0 24 24"><path d="m15 5-7 7 7 7"/></svg></button>
       <span class="cnt" id="cnt">1 / 3</span>
-      <button class="next" aria-label="Next" data-testid="slide-next"><svg viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></svg></button>
+      <button class="next" data-al="next" aria-label="Další" data-testid="slide-next"><svg viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></svg></button>
       <button class="pp" id="pp" data-al="pause" aria-label="Pause" data-testid="slide-playpause">
         <svg class="ic-pause" viewBox="0 0 24 24"><path d="M9 5v14M15 5v14"/></svg>
         <svg class="ic-play" viewBox="0 0 24 24"><path d="M8 5l11 7-11 7Z"/></svg>
@@ -367,11 +369,8 @@ footer{border-top:1px solid var(--line);padding:44px 0 22px;background:var(--bg)
         <div class="tb">
           <div><h2 id="catTitle" data-testid="category-title"></h2><div class="cc" id="catCount" data-testid="category-count"></div></div>
           <div class="curx" id="curx" data-testid="currency-selector">
-            <ul class="curx-opts" id="curOpts" role="group" aria-label="Currency"></ul>
-            <button class="curx-btn" id="curBtn" aria-expanded="false" aria-controls="curOpts" data-testid="currency-toggle">
-              <svg viewBox="0 0 100 100" aria-hidden="true"><defs><path id="ring" d="M50 50m-37 0a37 37 0 1 1 74 0a37 37 0 1 1-74 0"/></defs><text><textPath href="#ring" id="ringTxt"></textPath></text></svg>
-              <b id="curCode" data-testid="currency-current">CZK</b>
-            </button>
+            <span class="curx-l" id="curLbl" data-t="curName"></span>
+            <div class="curx-seg" id="curOpts" role="group" aria-labelledby="curLbl"></div>
           </div>
         </div>
         <p class="ratenote" id="rateNote" hidden data-testid="rate-note"></p>
@@ -393,7 +392,7 @@ footer{border-top:1px solid var(--line);padding:44px 0 22px;background:var(--bg)
 <footer>
   <div class="wrap">
     <div class="fg">
-      <div><h4 data-t="contact"></h4><p><span class="phx">[kontaktní e-mail – DOPLNIT]</span></p></div>
+      <div><h4 data-t="contact"></h4><p><span class="phx" data-t="contact_ph">[kontaktní e-mail – DOPLNIT]</span></p></div>
       <div><h4>Shop</h4><ul id="fCats"></ul></div>
       <div><h4 data-t="info"></h4><ul>
         <li><a href="#obchodni-podminky" data-t="l_terms" data-testid="footer-terms-link"></a></li>
@@ -415,21 +414,21 @@ footer{border-top:1px solid var(--line);padding:44px 0 22px;background:var(--bg)
     </div>
     <div class="fb">
       <div>© <span id="yr"></span> TEMNAK</div>
-      <div>made by <a href="#top">Donda Digital</a></div>
+      <div><span data-t="madeby"></span> <a href="#top">Donda Digital</a></div>
     </div>
   </div>
 </footer>
 
 <div class="ov" id="ov"></div>
-<aside class="drawer" id="drawer" aria-hidden="true" aria-label="Cart" data-testid="cart-drawer">
-  <div class="dh"><h3 data-t="cart_h"></h3><button class="ib" data-close data-al="close" aria-label="Close" data-testid="cart-close-button"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+<aside class="drawer" id="drawer" aria-hidden="true" aria-label="Nákupní taška" data-al="cart" data-testid="cart-drawer">
+  <div class="dh"><h3 data-t="cart_h"></h3><button class="ib" data-close data-al="close" aria-label="Zavřít" data-testid="cart-close-button"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
   <div class="db" id="cartBody"></div>
   <div class="df" id="cartFoot"></div>
 </aside>
 
 <div class="modal" id="modal" aria-hidden="true" role="dialog" aria-modal="true" data-testid="product-modal">
   <div class="mb">
-    <button class="ib x" data-close data-al="close" aria-label="Close" data-testid="product-modal-close"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+    <button class="ib x" data-close data-al="close" aria-label="Zavřít" data-testid="product-modal-close"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
     <div class="frame" style="min-height:320px" id="mImg"></div>
     <div class="mi" id="mInfo"></div>
   </div>
@@ -437,7 +436,7 @@ footer{border-top:1px solid var(--line);padding:44px 0 22px;background:var(--bg)
 
 <div class="modal" id="auth" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="authH" data-testid="auth-modal">
   <div class="mb one">
-    <button class="ib x" data-close data-al="close" aria-label="Close" data-testid="auth-close-button"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+    <button class="ib x" data-close data-al="close" aria-label="Zavřít" data-testid="auth-close-button"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
     <div class="mi">
       <h3 id="authH" data-t="account"></h3>
       <div class="tabs" role="tablist">
@@ -465,7 +464,7 @@ footer{border-top:1px solid var(--line);padding:44px 0 22px;background:var(--bg)
 
 <div class="modal" id="checkout" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="coH" data-testid="checkout-modal">
   <div class="mb">
-    <button class="ib x" data-close data-al="close" aria-label="Close" data-testid="checkout-close-button"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+    <button class="ib x" data-close data-al="close" aria-label="Zavřít" data-testid="checkout-close-button"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
     <div class="mi" style="background:var(--frame)">
       <h3 id="coH" data-t="checkout_h"></h3>
       <div id="coSummary" data-testid="checkout-summary"></div>
@@ -492,22 +491,22 @@ footer{border-top:1px solid var(--line);padding:44px 0 22px;background:var(--bg)
 
 <div class="modal" id="legal" aria-hidden="true" role="dialog" aria-modal="true" data-testid="legal-modal">
   <div class="mb doc">
-    <button class="ib x" data-close data-al="close" aria-label="Close" data-testid="legal-close-button"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+    <button class="ib x" data-close data-al="close" aria-label="Zavřít" data-testid="legal-close-button"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
     <article class="legal" id="legalBody"></article>
   </div>
 </div>
 
 <div class="modal" id="ccm" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="ccmH" data-testid="cookie-preferences-modal">
   <div class="mb one">
-    <button class="ib x" data-close data-al="close" aria-label="Close" data-testid="cookie-preferences-close"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+    <button class="ib x" data-close data-al="close" aria-label="Zavřít" data-testid="cookie-preferences-close"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
     <div class="mi">
       <h3 id="ccmH" data-t="cc_settings"></h3>
       <p style="font-size:13px;color:var(--mute)"><span data-t="cc_desc"></span> <a href="#cookies" style="text-decoration:underline" data-t="l_cookies"></a>.</p>
       <div>
-        <div class="tg"><div><b data-t="cc_nec"></b><p data-t="cc_nec_d"></p></div><label class="sw"><input type="checkbox" checked disabled aria-label="Nezbytné"><span></span></label></div>
-        <div class="tg"><div><b data-t="cc_pref"></b><p data-t="cc_pref_d"></p></div><label class="sw"><input type="checkbox" id="ccPref" data-testid="cookie-pref-toggle"><span></span></label></div>
-        <div class="tg"><div><b data-t="cc_ana"></b><p data-t="cc_ana_d"></p></div><label class="sw"><input type="checkbox" id="ccAna" data-testid="cookie-analytics-toggle"><span></span></label></div>
-        <div class="tg"><div><b data-t="cc_mkt"></b><p data-t="cc_mkt_d"></p></div><label class="sw"><input type="checkbox" id="ccMkt" data-testid="cookie-marketing-toggle"><span></span></label></div>
+        <div class="tg"><div><b data-t="cc_nec"></b><p data-t="cc_nec_d"></p></div><label class="sw"><input type="checkbox" checked disabled data-al="cc_nec" aria-label="Nezbytné"><span></span></label></div>
+        <div class="tg"><div><b data-t="cc_pref"></b><p data-t="cc_pref_d"></p></div><label class="sw"><input type="checkbox" id="ccPref" data-al="cc_pref" aria-label="Preferenční" data-testid="cookie-pref-toggle"><span></span></label></div>
+        <div class="tg"><div><b data-t="cc_ana"></b><p data-t="cc_ana_d"></p></div><label class="sw"><input type="checkbox" id="ccAna" data-al="cc_ana" aria-label="Analytické" data-testid="cookie-analytics-toggle"><span></span></label></div>
+        <div class="tg"><div><b data-t="cc_mkt"></b><p data-t="cc_mkt_d"></p></div><label class="sw"><input type="checkbox" id="ccMkt" data-al="cc_mkt" aria-label="Marketingové" data-testid="cookie-marketing-toggle"><span></span></label></div>
       </div>
       <div class="ccacts">
         <button class="btn ghost" data-cc="reject" data-t="cc_reject"></button>
@@ -535,6 +534,7 @@ footer{border-top:1px solid var(--line);padding:44px 0 22px;background:var(--bg)
 -->
 
 <!-- ===== PRÁVNÍ DOKUMENTY – ŠABLONY (vyžadují doplnění a právní kontrolu před spuštěním) ===== -->
+<!-- ----- ČESKY ----- -->
 <template id="tpl-obchodni-podminky">
 <h2>Obchodní podmínky</h2>
 <p class="meta">Účinné od: <span class="phx">[DATUM – DOPLNIT]</span></p>
@@ -648,6 +648,120 @@ Podpis (pouze při listinné formě) a datum: ____________</p>
 <div id="shipTable"></div>
 </template>
 
+<!-- ----- ENGLISH ----- -->
+<template id="tpl-obchodni-podminky-en">
+<h2>Terms and Conditions</h2>
+<p class="meta">Effective from: <span class="phx">[DATE – TO BE ADDED]</span></p>
+<div class="warn"><b>TEMPLATE – MUST BE COMPLETED AND REVIEWED BY A LAWYER.</b> Yellow items in square brackets are placeholders. This is an English translation for convenience; the Czech version is the binding one. The text is based on the requirements of Act No. 89/2012 Coll. (Civil Code) and Act No. 634/1992 Coll. (Consumer Protection Act) but does not replace individual legal advice.</div>
+<h3>1. Seller</h3>
+<p>The operator of the TEMNAK online shop and the seller is: <span class="phx">[FULL NAME / COMPANY NAME]</span>, with registered office / place of business at <span class="phx">[ADDRESS]</span>, Company ID (IČO): <span class="phx">[ID]</span>, VAT ID: <span class="phx">[VAT ID / "not a VAT payer"]</span>, registered in <span class="phx">[trade register / commercial register kept by …, section …, file …]</span>.</p>
+<p>Contact: e-mail <span class="phx">[E-MAIL]</span>, phone <span class="phx">[PHONE]</span>. Address for delivery and complaints: <span class="phx">[ADDRESS]</span>.</p>
+<h3>2. Introductory provisions</h3>
+<p>These terms and conditions govern the mutual rights and obligations of the seller and the buyer when concluding a purchase contract through the online shop. Where the buyer is a consumer, matters not governed by these terms are governed by the Civil Code and the Consumer Protection Act. The contract may be concluded in Czech.</p>
+<h3>3. User account</h3>
+<p>The buyer may shop without registering. When registering, the buyer must provide truthful information and protect their login details. <span class="phx">[To be completed once user accounts are live.]</span></p>
+<h3>4. Conclusion of the purchase contract</h3>
+<ul>
+<li>The presentation of goods in the shop is informative and is not an offer to conclude a contract within the meaning of Section 1732(2) of the Civil Code.</li>
+<li>The buyer sends the order using the "Order with obligation to pay" button. Before sending, the buyer can review and change the data entered.</li>
+<li>The purchase contract is concluded when the seller's order confirmation is delivered to the buyer's e-mail.</li>
+<li>The buyer bears the costs of distance communication means.</li>
+</ul>
+<h3>5. Price and payment terms</h3>
+<ul>
+<li>Prices are stated in Czech crowns (CZK) <span class="phx">[including VAT / the seller is not a VAT payer]</span>. Amounts shown in EUR and USD are only an approximate conversion at a fixed rate, not a live rate.</li>
+<li>Payment methods: <span class="phx">[TO BE ADDED – e.g. payment card via …, bank transfer]</span>.</li>
+<li>Shipping costs are shown with the chosen shipping method and are added to the price of the goods before the order is sent.</li>
+</ul>
+<h3>6. Production and delivery</h3>
+<p>Goods are made to order. Estimated total production and delivery times:</p>
+<ul><li>Czech Republic: production and delivery within 14 days.</li><li>Slovakia and other countries: production and delivery approx. 3 weeks.</li></ul>
+<p>This is an estimate, not a guaranteed delivery date. Carriers and prices: see <a href="#doprava">Shipping &amp; delivery</a>. The risk of damage to the goods passes to the buyer upon taking delivery.</p>
+<h3>7. Withdrawal from the contract (consumers)</h3>
+<ul>
+<li>A consumer has the right to withdraw from the contract without giving a reason within 14 days of receiving the goods (Section 1829 of the Civil Code). Withdrawal can be sent to <span class="phx">[E-MAIL / ADDRESS]</span>, e.g. using the model form below.</li>
+<li>The seller will refund the payments received, including the cost of the cheapest standard delivery offered, within 14 days of withdrawal, but not before receiving the returned goods or proof that they were sent back.</li>
+<li>The direct costs of returning the goods are borne by <span class="phx">[consumer / seller – TO BE ADDED]</span>.</li>
+<li><b>For a lawyer to assess:</b> the exception under Section 1837(d) (goods made to the consumer's specification) applies only to genuinely personalised goods, not to a regular range made to order. <span class="phx">[Verify and complete.]</span></li>
+</ul>
+<h3>8. Rights from defective performance (complaints)</h3>
+<p>A consumer may claim rights arising from a defect that appears in consumer goods within 24 months of receipt (Section 2165 of the Civil Code). Complaints can be submitted at <span class="phx">[ADDRESS / E-MAIL]</span>. The seller will resolve the complaint within 30 days of its submission at the latest, unless a longer period is agreed with the consumer. Details: <span class="phx">[Complaints procedure – TO BE ADDED]</span>.</p>
+<h3>9. Out-of-court dispute resolution and supervision</h3>
+<p>The Czech Trade Inspection Authority (Česká obchodní inspekce), Štěpánská 567/15, 120 00 Prague 2, <a href="https://adr.coi.cz" target="_blank" rel="noopener">adr.coi.cz</a>, is the competent body for out-of-court resolution of consumer disputes. Supervision of compliance with the Consumer Protection Act is carried out by the Czech Trade Inspection Authority; the trade licence is supervised by the competent trade licensing office.</p>
+<h3>10. Personal data protection</h3>
+<p>The processing of personal data is governed by the <a href="#ochrana-osobnich-udaju">Privacy Policy</a>.</p>
+<h3>11. Final provisions</h3>
+<p>These terms are effective from <span class="phx">[DATE]</span>. The seller may change them; contracts already concluded are governed by the version valid at the time the order was sent.</p>
+<h3>Annex – model withdrawal form</h3>
+<p>Addressee: <span class="phx">[NAME/COMPANY, ADDRESS, E-MAIL]</span><br>
+I hereby give notice that I withdraw from my contract for the purchase of the following goods: ____________<br>
+Date of order / date of receipt: ____________<br>
+Order number: ____________<br>
+Name of the consumer: ____________<br>
+Address of the consumer: ____________<br>
+Account number for the refund: ____________<br>
+Signature (only for paper form) and date: ____________</p>
+</template>
+
+<template id="tpl-ochrana-osobnich-udaju-en">
+<h2>Privacy Policy</h2>
+<p class="meta">Effective from: <span class="phx">[DATE – TO BE ADDED]</span></p>
+<div class="warn"><b>TEMPLATE – MUST BE COMPLETED AND REVIEWED BY A LAWYER.</b> English translation for convenience; the Czech version is the binding one. Based on Regulation (EU) 2016/679 (GDPR) and Act No. 110/2019 Coll. on personal data processing.</div>
+<h3>1. Controller</h3>
+<p>The controller of personal data is <span class="phx">[NAME / COMPANY]</span>, Company ID <span class="phx">[ID]</span>, <span class="phx">[ADDRESS]</span>, e-mail <span class="phx">[E-MAIL]</span>. Data protection officer: <span class="phx">[not appointed / TO BE ADDED]</span>.</p>
+<h3>2. What data, why and on what basis</h3>
+<table>
+<tr><th>Purpose</th><th>Data</th><th>Legal basis</th><th>Retention</th></tr>
+<tr><td>Processing orders and delivering goods</td><td>name, e-mail, phone, delivery address, order contents</td><td>performance of a contract – Art. 6(1)(b) GDPR</td><td>for the duration of the contract and until limitation periods expire <span class="phx">[TO BE ADDED]</span></td></tr>
+<tr><td>Accounting and taxes</td><td>invoicing data</td><td>legal obligation – Art. 6(1)(c) GDPR</td><td>as required by accounting and tax law (usually 10 years)</td></tr>
+<tr><td>User account</td><td>name, e-mail, password (encrypted), order history</td><td>performance of a contract – Art. 6(1)(b) GDPR</td><td>until the account is deleted</td></tr>
+<tr><td>Newsletter</td><td>e-mail</td><td>consent – Art. 6(1)(a) GDPR; for existing customers possibly Section 7 of Act No. 480/2004 Coll.</td><td>until consent is withdrawn / unsubscribe</td></tr>
+<tr><td>Cookies and similar technologies</td><td>see <a href="#cookies">Cookie Policy</a></td><td>necessary: legitimate interest; others: consent</td><td>see cookie policy</td></tr>
+</table>
+<h3>3. Recipients and processors</h3>
+<p>Data may be passed to: carriers <span class="phx">[TO BE ADDED]</span>, payment gateway provider <span class="phx">[TO BE ADDED]</span>, hosting provider <span class="phx">[TO BE ADDED]</span>, e-mailing provider <span class="phx">[TO BE ADDED]</span>, accountant <span class="phx">[TO BE ADDED]</span>. Transfers outside the EU/EEA: <span class="phx">[none / TO BE ADDED including safeguards]</span>.</p>
+<h3>4. Your rights</h3>
+<p>You have the right of access, rectification, erasure, restriction of processing, data portability, the right to object, and the right to withdraw consent at any time (withdrawal does not affect the lawfulness of processing carried out before it). Send requests to <span class="phx">[E-MAIL]</span>.</p>
+<p>You have the right to lodge a complaint with the Office for Personal Data Protection (Úřad pro ochranu osobních údajů), Pplk. Sochora 27, 170 00 Prague 7, <a href="https://uoou.gov.cz" target="_blank" rel="noopener">uoou.gov.cz</a>.</p>
+<h3>5. Security</h3>
+<p>The controller has taken technical and organisational measures to protect data. <span class="phx">[TO BE ADDED according to the actual solution.]</span> No automated decision-making or profiling takes place <span class="phx">[verify]</span>.</p>
+</template>
+
+<template id="tpl-cookies-en">
+<h2>Cookie Policy</h2>
+<p class="meta">Effective from: <span class="phx">[DATE – TO BE ADDED]</span></p>
+<div class="warn"><b>TEMPLATE – MUST BE REVIEWED.</b> English translation for convenience; the Czech version is the binding one. Based on Section 89(3) of Act No. 127/2005 Coll. on electronic communications and the GDPR. When analytics or marketing tools are added, the table must be completed.</div>
+<h3>What cookies are</h3>
+<p>Cookies and similar technologies (e.g. localStorage) are small files or records stored in your browser. We use necessary technologies without consent because they are required for the shop to work. Other categories are activated only after you consent.</p>
+<h3>What we currently use</h3>
+<table>
+<tr><th>Name</th><th>Category</th><th>Purpose</th><th>Retention</th></tr>
+<tr><td>tmk_consent</td><td>necessary</td><td>stores your consent choice</td><td>12 months</td></tr>
+<tr><td>tmk_cart</td><td>necessary</td><td>shopping bag contents and chosen shipping</td><td>until the bag is emptied / browser data is cleared</td></tr>
+<tr><td>tmk_lang, tmk_cur</td><td>preferences</td><td>remembers language and currency</td><td>until consent is withdrawn</td></tr>
+<tr><td><span class="phx">[TO BE ADDED]</span></td><td>analytics</td><td>traffic measurement – <b>currently not used</b></td><td>–</td></tr>
+<tr><td><span class="phx">[TO BE ADDED]</span></td><td>marketing</td><td>advertising and remarketing – <b>currently not used</b></td><td>–</td></tr>
+</table>
+<p>The Instagram link is an ordinary link; we do not embed Instagram in the page, so Instagram does not set cookies when you visit the shop.</p>
+<h3>Changing or withdrawing consent</h3>
+<p>You can change your choice or withdraw consent at any time – via "Cookie settings" in the website footer or with the button below. You can also delete cookies in your browser settings.</p>
+<button class="btn ghost ccbtn" type="button" data-cc-open>Cookie settings</button>
+</template>
+
+<template id="tpl-doprava-en">
+<h2>Shipping &amp; delivery</h2>
+<div class="warn"><b>TO BE COMPLETED:</b> specific carriers and shipping prices. English translation for convenience; the Czech version is the binding one. Prices are set in the <code>SHIPPING</code> configuration in the code.</div>
+<h3>Estimated production and delivery time</h3>
+<table>
+<tr><th>Country</th><th>Production + delivery (total)</th></tr>
+<tr><td>Czech Republic</td><td>within 14 days</td></tr>
+<tr><td>Slovakia and other countries</td><td>approx. 3 weeks</td></tr>
+</table>
+<p>All products are made to order. The times stated are estimates, not a guaranteed delivery date.</p>
+<h3>Shipping methods and prices</h3>
+<div id="shipTable"></div>
+</template>
+
 <script>
 /* ============ UPRAVTE ZDE / EDIT HERE ============ */
 // Ceny produktů a dopravy zadávejte v CZK. Přepočet do ostatních měn je centralizovaný ve funkci money().
@@ -658,43 +772,46 @@ const CURRENCIES = ["CZK","EUR","USD"];
 const SLIDES = [                     // img = cesta/URL fotky banneru
   {img:""},{img:""},{img:""}
 ];
+// Texty (name, label, title, text, carrier) lze zadat jako řetězec, nebo jako {cs:"…",en:"…"} pro obě jazykové mutace.
 // Kategorie levého menu (pořadí = pořadí v menu). id se používá v URL (?kat=) a u produktů (cat).
 const CATEGORIES = [
-  {id:"mikiny", label:"Mikiny"},
-  {id:"tricka", label:"Trička"},
-  {id:"obrazky", label:"Obrázky"},
-  {id:"sperky", label:"Šperky"}
+  {id:"mikiny",  label:{cs:"Mikiny",en:"Hoodies"}},
+  {id:"tricka",  label:{cs:"Trička",en:"T-shirts"}},
+  {id:"obrazky", label:{cs:"Obrázky",en:"Prints"}},
+  {id:"sperky",  label:{cs:"Šperky",en:"Jewelry"}}
 ];
 const PRODUCTS = [                   // price v CZK; img = přední foto, img2 = zadní foto (hover); cat = id kategorie; sizes:[] = bez velikostí
-  {id:1,name:"Produkt 1",price:0,img:"",img2:"",cat:"mikiny",sizes:["S","M","L","XL"],badge:true},
-  {id:2,name:"Produkt 2",price:0,img:"",img2:"",cat:"mikiny",sizes:["S","M","L","XL"],badge:true},
-  {id:3,name:"Produkt 3",price:0,img:"",img2:"",cat:"tricka",sizes:["S","M","L","XL"],badge:true},
-  {id:4,name:"Produkt 4",price:0,img:"",img2:"",cat:"tricka",sizes:["S","M","L","XL"],badge:true}
+  {id:1,name:{cs:"Produkt 1",en:"Product 1"},price:0,img:"",img2:"",cat:"mikiny",sizes:["S","M","L","XL"],badge:true},
+  {id:2,name:{cs:"Produkt 2",en:"Product 2"},price:0,img:"",img2:"",cat:"mikiny",sizes:["S","M","L","XL"],badge:true},
+  {id:3,name:{cs:"Produkt 3",en:"Product 3"},price:0,img:"",img2:"",cat:"tricka",sizes:["S","M","L","XL"],badge:true},
+  {id:4,name:{cs:"Produkt 4",en:"Product 4"},price:0,img:"",img2:"",cat:"tricka",sizes:["S","M","L","XL"],badge:true}
 ];
 // Projekty (nahrazují YouTube video). url = cíl odkazu, img = náhledový obrázek.
 const PROJECTS = [
-  {title:"Project 1", text:"", img:"", url:"#"},
-  {title:"Project 2", text:"", img:"", url:"#"},
-  {title:"Project 3", text:"", img:"", url:"#"}
+  {title:{cs:"Projekt 1",en:"Project 1"}, text:"", img:"", url:"#"},
+  {title:{cs:"Projekt 2",en:"Project 2"}, text:"", img:"", url:"#"},
+  {title:{cs:"Projekt 3",en:"Project 3"}, text:"", img:"", url:"#"}
 ];
 // Doprava: price v CZK. priceSet:false = cena zatím není stanovena (počítá se 0 a zobrazí se upozornění).
 const SHIPPING = [
-  {id:"cz",   region:"cz",   label:{cs:"Česká republika",en:"Czech Republic"}, carrier:"[DOPRAVCE – DOPLNIT]", price:0, priceSet:false},
-  {id:"sk",   region:"sk",   label:{cs:"Slovensko",en:"Slovakia"},              carrier:"[DOPRAVCE – DOPLNIT]", price:0, priceSet:false},
-  {id:"intl", region:"intl", label:{cs:"Ostatní země",en:"Other countries"},     carrier:"[DOPRAVCE – DOPLNIT]", price:0, priceSet:false}
+  {id:"cz",   region:"cz",   label:{cs:"Česká republika",en:"Czech Republic"}, carrier:{cs:"[DOPRAVCE – DOPLNIT]",en:"[CARRIER – TO BE ADDED]"}, price:0, priceSet:false},
+  {id:"sk",   region:"sk",   label:{cs:"Slovensko",en:"Slovakia"},              carrier:{cs:"[DOPRAVCE – DOPLNIT]",en:"[CARRIER – TO BE ADDED]"}, price:0, priceSet:false},
+  {id:"intl", region:"intl", label:{cs:"Ostatní země",en:"Other countries"},     carrier:{cs:"[DOPRAVCE – DOPLNIT]",en:"[CARRIER – TO BE ADDED]"}, price:0, priceSet:false}
 ];
 const CONSENT_VERSION = 1, CONSENT_DAYS = 365;
 /* ================================================== */
 
 const T={
-cs:{nav_shop:"Shop",nav_projects:"Projekty",proj_h:"Projekty",proj_sub:"Vybrané projekty TEMNAK",proj_ph:"Popis projektu – doplňte",new:"Novinka",soon:"Připravujeme",
+cs:{title:"TEMNAK – Official Merch",desc:"TEMNAK – oficiální merch a streetwear. Mikiny, trička, obrázky a šperky.",ogdesc:"TEMNAK – oficiální merch a streetwear.",
+ nav_shop:"Shop",nav_projects:"Projekty",proj_h:"Projekty",proj_sub:"Vybrané projekty TEMNAK",proj_ph:"Popis projektu – doplňte",new:"Novinka",soon:"Připravujeme",
  size:"Velikost",pick:"Vyberte velikost",add:"Přidat do košíku",added:"Přidáno",cart_h:"Nákupní taška",
  empty:"Vaše nákupní taška je prázdná.",sub:"Mezisoučet",ship:"Doprava",total:"Celkem",ship_pick:"Vyberte dopravu",ship_h:"Způsob dopravy",shipTbd:"cena bude upřesněna",
  to_checkout:"Pokračovat k objednávce",demo:"Platby a odesílání objednávek zatím nejsou napojeny.",
  remove:"Odebrat",ph:"Banner – nahraďte fotografií",cart:"Nákupní taška",menu:"Menu",close:"Zavřít",pause:"Pozastavit přehrávání",play:"Spustit přehrávání",
- contact:"Kontakt",follow:"Sledujte nás",info:"Informace",cats:"Kategorie",all:"Vše",
+ home:"TEMNAK – domů",prev:"Předchozí",next:"Další",
+ contact:"Kontakt",contact_ph:"[kontaktní e-mail – DOPLNIT]",follow:"Sledujte nás",info:"Informace",cats:"Kategorie",all:"Vše",madeby:"vytvořil",
  emptyCatH:"Zatím zde nic není",emptyCat:"V této kategorii zatím nejsou žádné produkty. Brzy přidáme další.",
- curLabel:"Měna · Currency · ",rate:(c,r)=>`Orientační přepočet pevným kurzem 1 ${c} = ${r} Kč (nejde o živý kurz).`,
+ curName:"Měna",rate:(c,r)=>`Orientační přepočet pevným kurzem 1 ${c} = ${r} Kč (nejde o živý kurz).`,
  deliv_h:"Výroba a doručení",deliv_cz:"Česká republika: výroba a doručení do 14 dnů",deliv_sk:"Slovensko a ostatní země: výroba a doručení přibližně 3 týdny",deliv_note:"Odhad, nikoli garantovaný termín doručení.",
  account:"Účet",login:"Přihlášení",signup:"Registrace",password:"Heslo",name:"Jméno a příjmení",phone:"Telefon",street:"Ulice a číslo",city:"Město",zip:"PSČ",country:"Země",
  pending_auth:"Uživatelské účty zatím nejsou napojeny na backend – přihlášení ani registrace se zatím neukládají.",
@@ -706,7 +823,7 @@ cs:{nav_shop:"Shop",nav_projects:"Projekty",proj_h:"Projekty",proj_sub:"Vybrané
  nl_h:"Newsletter",nl_p:"Novinky a nové kolekce e-mailem.",nl_btn:"Odebírat",nl_legal:"Odesláním souhlasíte se zasíláním newsletteru; souhlas lze kdykoli odvolat. Více v",
  nl_bad:"Zadejte platný e-mail.",nl_done:"E-mail je v pořádku, ale newsletter zatím není napojen – nic nebylo uloženo.",
  l_terms:"Obchodní podmínky",l_privacy:"Zásady ochrany osobních údajů",l_cookies:"Zásady používání cookies",l_shipping:"Doprava a dodání",
- legalEn:"",
+ th_country:"Země",th_carrier:"Dopravce",th_price:"Cena",
  cc_h:"Cookies na webu TEMNAK",cc_text:"Nezbytné cookies používáme pro fungování e-shopu (nákupní taška, uložení vaší volby). Preferenční, analytické a marketingové aktivujeme jen s vaším souhlasem. Volbu můžete kdykoli změnit v patičce.",
  cc_accept:"Přijmout vše",cc_reject:"Odmítnout vše",cc_custom:"Přizpůsobit",cc_save:"Uložit volbu",cc_settings:"Nastavení cookies",
  cc_desc:"Vyberte, které kategorie povolíte. Souhlas můžete kdykoli změnit nebo odvolat.",
@@ -715,14 +832,16 @@ cs:{nav_shop:"Shop",nav_projects:"Projekty",proj_h:"Projekty",proj_sub:"Vybrané
  cc_ana:"Analytické",cc_ana_d:"Měření návštěvnosti. Aktuálně nepoužíváme.",
  cc_mkt:"Marketingové",cc_mkt_d:"Reklama a remarketing. Aktuálně nepoužíváme.",
  items:n=>n===1?"1 produkt":(n>=2&&n<=4?n+" produkty":n+" produktů")},
-en:{nav_shop:"Shop",nav_projects:"Projects",proj_h:"Projects",proj_sub:"Selected TEMNAK projects",proj_ph:"Project description – add yours",new:"New",soon:"Coming soon",
+en:{title:"TEMNAK – Official Merch",desc:"TEMNAK – official merch and streetwear. Hoodies, t-shirts, prints and jewelry.",ogdesc:"TEMNAK – official merch and streetwear.",
+ nav_shop:"Shop",nav_projects:"Projects",proj_h:"Projects",proj_sub:"Selected TEMNAK projects",proj_ph:"Project description – add yours",new:"New",soon:"Coming soon",
  size:"Size",pick:"Select a size",add:"Add to bag",added:"Added",cart_h:"Shopping bag",
  empty:"Your shopping bag is empty.",sub:"Subtotal",ship:"Shipping",total:"Total",ship_pick:"Choose shipping",ship_h:"Shipping method",shipTbd:"price to be confirmed",
  to_checkout:"Continue to checkout",demo:"Payments and order submission are not connected yet.",
  remove:"Remove",ph:"Banner – replace with a photo",cart:"Shopping bag",menu:"Menu",close:"Close",pause:"Pause slideshow",play:"Play slideshow",
- contact:"Contact",follow:"Follow us",info:"Information",cats:"Categories",all:"All",
+ home:"TEMNAK – home",prev:"Previous",next:"Next",
+ contact:"Contact",contact_ph:"[contact e-mail – TO BE ADDED]",follow:"Follow us",info:"Information",cats:"Categories",all:"All",madeby:"made by",
  emptyCatH:"Nothing here yet",emptyCat:"There are no products in this category yet. More coming soon.",
- curLabel:"Currency · Měna · ",rate:(c,r)=>`Approximate conversion at a fixed rate 1 ${c} = ${r} CZK (not a live rate).`,
+ curName:"Currency",rate:(c,r)=>`Approximate conversion at a fixed rate 1 ${c} = ${r} CZK (not a live rate).`,
  deliv_h:"Production & delivery",deliv_cz:"Czech Republic: production and delivery up to 14 days",deliv_sk:"Slovakia and other countries: production and delivery approx. 3 weeks",deliv_note:"Estimate, not a guaranteed delivery date.",
  account:"Account",login:"Log in",signup:"Sign up",password:"Password",name:"Full name",phone:"Phone",street:"Street and number",city:"City",zip:"Postal code",country:"Country",
  pending_auth:"Customer accounts are not connected to a backend yet – log in and sign up are not stored.",
@@ -734,7 +853,7 @@ en:{nav_shop:"Shop",nav_projects:"Projects",proj_h:"Projects",proj_sub:"Selected
  nl_h:"Newsletter",nl_p:"News and new drops by e-mail.",nl_btn:"Subscribe",nl_legal:"By subscribing you agree to receive the newsletter; you can withdraw at any time. See the",
  nl_bad:"Enter a valid e-mail.",nl_done:"The e-mail is valid, but the newsletter is not connected yet – nothing was stored.",
  l_terms:"Terms and Conditions",l_privacy:"Privacy Policy",l_cookies:"Cookie Policy",l_shipping:"Shipping & delivery",
- legalEn:"Legal documents are currently available in Czech only (binding version). English translation: [TO BE ADDED].",
+ th_country:"Country",th_carrier:"Carrier",th_price:"Price",
  cc_h:"Cookies on TEMNAK",cc_text:"We use necessary cookies to run the shop (shopping bag, storing your choice). Preference, analytics and marketing cookies are only enabled with your consent. You can change your choice anytime in the footer.",
  cc_accept:"Accept all",cc_reject:"Reject all",cc_custom:"Customize",cc_save:"Save choice",cc_settings:"Cookie settings",
  cc_desc:"Choose which categories to allow. You can change or withdraw consent at any time.",
@@ -754,6 +873,8 @@ consent=readConsent();
 try{const c=JSON.parse(ls.get("tmk_cart")||"{}");cart=Array.isArray(c.items)?c.items.filter(i=>PRODUCTS.some(p=>p.id===i.id)):[];shipSel=SHIPPING.some(s=>s.id===c.ship)?c.ship:null}catch(e){}
 if(consent?.preferences){lang=T[ls.get("tmk_lang")]?ls.get("tmk_lang"):"cs";cur=RATES[ls.get("tmk_cur")]?ls.get("tmk_cur"):"CZK"}
 const t=k=>T[lang][k];
+// L = vybere text podle jazyka (řetězec zůstane beze změny)
+const L=x=>x&&typeof x==="object"?(x[lang]??x.cs??""):(x??"");
 const money=n=>new Intl.NumberFormat(lang==="cs"?"cs-CZ":"en-US",{style:"currency",currency:cur,minimumFractionDigits:2,maximumFractionDigits:2}).format(n/RATES[cur]);
 const save=()=>{
   ls.set("tmk_cart",JSON.stringify({items:cart,ship:shipSel}));
@@ -761,7 +882,7 @@ const save=()=>{
 };
 const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
 if(reduce)playing=false;
-const catLabel=id=>id==="all"?t("all"):(CATEGORIES.find(c=>c.id===id)?.label||t("all"));
+const catLabel=id=>id==="all"?t("all"):L(CATEGORIES.find(c=>c.id===id)?.label)||t("all");
 
 /* slideshow (beze změny) */
 function buildHero(){
@@ -797,8 +918,8 @@ $("#hero").addEventListener("touchend",e=>{const d=e.changedTouches[0].clientX-t
 /* categories (left sidebar) */
 function renderSide(){
   const link=(id,label,cls="")=>`<li><a href="?kat=${id}" class="${cls}" data-cat="${id}" aria-current="${catSel===id}" data-testid="category-link-${id}">${label}</a></li>`;
-  $("#cats").innerHTML=link("all",t("all"),"all")+CATEGORIES.map(c=>link(c.id,c.label)).join("");
-  $("#fCats").innerHTML=CATEGORIES.map(c=>`<li><a href="?kat=${c.id}" data-cat="${c.id}">${c.label}</a></li>`).join("");
+  $("#cats").innerHTML=link("all",t("all"),"all")+CATEGORIES.map(c=>link(c.id,L(c.label))).join("");
+  $("#fCats").innerHTML=CATEGORIES.map(c=>`<li><a href="?kat=${c.id}" data-cat="${c.id}">${L(c.label)}</a></li>`).join("");
   $("#sideCur").textContent=catLabel(catSel);
 }
 function setCat(id,push){
@@ -816,31 +937,33 @@ $("#sideTg").onclick=()=>{const o=$("#cats").classList.toggle("open");$("#sideTg
 const catFromUrl=()=>new URLSearchParams(location.search).get("kat")||"all";
 window.addEventListener("popstate",()=>setCat(catFromUrl(),false));
 
-/* currency selector (single, circular) */
+/* přepínač měn (segmentová pilulka) */
 function renderCur(){
-  $("#curCode").textContent=cur;
-  $("#ringTxt").textContent=t("curLabel").repeat(2);
-  $("#curOpts").innerHTML=CURRENCIES.map(c=>`<li><button data-cur="${c}" aria-pressed="${c===cur}" data-testid="currency-option-${c.toLowerCase()}">${c}</button></li>`).join("");
-  $("#curBtn").setAttribute("aria-label",(lang==="cs"?"Měna: ":"Currency: ")+cur);
+  const seg=$("#curOpts");
+  seg.style.setProperty("--pos",CURRENCIES.indexOf(cur));
+  seg.innerHTML=CURRENCIES.map(c=>`<button type="button" data-cur="${c}" aria-pressed="${c===cur}" data-testid="currency-option-${c.toLowerCase()}">${c}</button>`).join("");
   const n=$("#rateNote");n.hidden=cur==="CZK";if(cur!=="CZK")n.textContent=t("rate")(cur,RATES[cur]);
 }
-const curOpen=o=>{$("#curx").classList.toggle("open",o);$("#curBtn").setAttribute("aria-expanded",o)};
-$("#curBtn").onclick=()=>curOpen(!$("#curx").classList.contains("open"));
-$("#curOpts").addEventListener("click",e=>{const b=e.target.closest("[data-cur]");if(!b)return;cur=b.dataset.cur;save();renderAll();curOpen(false);$("#curBtn").focus()});
-document.addEventListener("click",e=>{if(!e.target.closest("#curx"))curOpen(false)});
+$("#curOpts").addEventListener("click",e=>{
+  const b=e.target.closest("[data-cur]");if(!b||b.dataset.cur===cur)return;
+  cur=b.dataset.cur;save();
+  $("#curOpts").style.setProperty("--pos",CURRENCIES.indexOf(cur));
+  renderAll();
+  const nb=$(`#curOpts [data-cur="${cur}"]`);if(nb)nb.focus();
+});
 
 /* products */
 const pic=(p)=>p.img
-  ?`<img class="a ${p.img2?"has2":""}" src="${p.img}" alt="${p.name}" loading="lazy">${p.img2?`<img class="b" src="${p.img2}" alt="" loading="lazy">`:""}`
+  ?`<img class="a ${p.img2?"has2":""}" src="${p.img}" alt="${L(p.name)}" loading="lazy">${p.img2?`<img class="b" src="${p.img2}" alt="" loading="lazy">`:""}`
   :`<div class="a blank"></div>`;
 function renderGrid(){
   const list=catSel==="all"?PRODUCTS:PRODUCTS.filter(p=>p.cat===catSel);
   $("#catTitle").textContent=catLabel(catSel);
   $("#catCount").textContent=list.length?t("items")(list.length):"";
   $("#grid").innerHTML=list.map((p,i)=>`
-    <button class="card" style="--i:${i}" data-id="${p.id}" aria-label="${p.name}" data-testid="product-card-${p.id}">
+    <button class="card" style="--i:${i}" data-id="${p.id}" aria-label="${L(p.name)}" data-testid="product-card-${p.id}">
       <div class="frame">${p.badge?`<span class="badge">${t("new")}</span>`:""}${pic(p)}</div>
-      <h3>${p.name}</h3><div class="p" data-testid="product-price-${p.id}">${money(p.price)}</div>
+      <h3>${L(p.name)}</h3><div class="p" data-testid="product-price-${p.id}">${money(p.price)}</div>
     </button>`).join("");
   $("#grid").hidden=!list.length;
   $("#catEmpty").hidden=!!list.length;
@@ -853,8 +976,8 @@ function renderProjects(){
   $("#pgrid").innerHTML=PROJECTS.map((p,i)=>{
     const ext=/^https?:/.test(p.url);
     return `<a class="pcard rv" href="${p.url||"#"}" ${ext?'target="_blank" rel="noopener"':""} data-testid="project-card-${i+1}">
-      <div class="pf">${p.img?`<img src="${p.img}" alt="${p.title}" loading="lazy">`:`<div class="blank">0${i+1}</div>`}</div>
-      <div class="pb"><div><h3>${p.title}</h3><p>${p.text||t("proj_ph")}</p></div>
+      <div class="pf">${p.img?`<img src="${p.img}" alt="${L(p.title)}" loading="lazy">`:`<div class="blank">0${i+1}</div>`}</div>
+      <div class="pb"><div><h3>${L(p.title)}</h3><p>${L(p.text)||t("proj_ph")}</p></div>
       <span class="arr" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></div></a>`}).join("");
   $$("#pgrid .rv").forEach(el=>io.observe(el));
 }
@@ -863,7 +986,7 @@ function renderProjects(){
 function renderModal(){
   const p=openProd;if(!p)return;
   $("#mImg").innerHTML=pic(p);
-  $("#mInfo").innerHTML=`<h3>${p.name}</h3>
+  $("#mInfo").innerHTML=`<h3>${L(p.name)}</h3>
     <div data-testid="modal-price">${money(p.price)}</div>
     <div style="color:var(--mute);font-size:13px">${t("soon")}</div>
     ${p.sizes?.length?`<div><div style="font-size:13px;margin-bottom:8px">${t("size")}</div>
@@ -911,12 +1034,12 @@ function renderCart(){
   body.innerHTML=cart.map(i=>{
     const p=PRODUCTS.find(x=>x.id===i.id);
     return `<div class="row" data-testid="cart-item-${i.key}"><div class="th">${p.img?`<img src="${p.img}" alt="" style="width:100%;height:100%;object-fit:cover">`:""}</div>
-      <div class="i"><b>${p.name}</b>${i.size?`${t("size")}: ${i.size} · `:""}${money(p.price)}<br>
+      <div class="i"><b>${L(p.name)}</b>${i.size?`${t("size")}: ${i.size} · `:""}${money(p.price)}<br>
       <span class="q"><button data-q="-1" data-k="${i.key}" aria-label="−">−</button><span>${i.qty}</span><button data-q="1" data-k="${i.key}" aria-label="+">+</button></span>
       <button class="rm" data-rm="${i.key}">${t("remove")}</button></div></div>`}).join("");
   foot.innerHTML=`<fieldset class="shipf"><legend>${t("ship_h")}</legend>
     ${SHIPPING.map(s=>`<label class="opt"><input type="radio" name="ship" value="${s.id}" ${s.id===shipSel?"checked":""} data-testid="shipping-option-${s.id}">
-      <span><b>${s.label[lang]}</b><small>${s.carrier} · ${t(s.region==="cz"?"deliv_cz":"deliv_sk").split(": ")[1]}</small></span><em>${shipPrice(s)}</em></label>`).join("")}
+      <span><b>${L(s.label)}</b><small>${L(s.carrier)} · ${t(s.region==="cz"?"deliv_cz":"deliv_sk").split(": ")[1]}</small></span><em>${shipPrice(s)}</em></label>`).join("")}
     </fieldset>${sumRows()}
     <p class="note">${t("demo")}</p><button class="btn" id="toCo" ${shipSel?"":"disabled"} data-testid="proceed-to-checkout-button">${t("to_checkout")}</button>`;
 }
@@ -932,7 +1055,7 @@ $("#cartFoot").addEventListener("click",e=>{if(e.target.id==="toCo")openCheckout
 
 /* checkout */
 function renderCheckout(){
-  $("#coSummary").innerHTML=`<div class="colist">${cart.map(i=>{const p=PRODUCTS.find(x=>x.id===i.id);return `<div><span>${p.name}${i.size?" ("+i.size+")":""} × ${i.qty}</span><span>${money(p.price*i.qty)}</span></div>`}).join("")}</div>
+  $("#coSummary").innerHTML=`<div class="colist">${cart.map(i=>{const p=PRODUCTS.find(x=>x.id===i.id);return `<div><span>${L(p.name)}${i.size?" ("+i.size+")":""} × ${i.qty}</span><span>${money(p.price*i.qty)}</span></div>`}).join("")}</div>
     <div style="margin-top:12px">${sumRows()}</div>${delivBox()}`;
 }
 function openCheckout(){
@@ -984,15 +1107,15 @@ function closeAll(){
 $("#cartBtn").onclick=openCart;
 $("#ov").onclick=closeAll;
 $$("[data-close]").forEach(b=>b.onclick=closeAll);
-document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeAll();curOpen(false)}});
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeAll()});
 
-/* legal pages (hash routes) */
+/* legal pages (hash routes) – česká nebo anglická šablona podle jazyka */
 function openLegal(id){
-  const tpl=$("#tpl-"+id);if(!tpl)return;
+  const tpl=(lang==="en"&&$("#tpl-"+id+"-en"))||$("#tpl-"+id);if(!tpl)return;
   OVERLAYS.forEach(s=>{$(s).classList.remove("on");$(s).setAttribute("aria-hidden","true")});
-  $("#legalBody").innerHTML=(lang==="en"?`<p class="warn">${t("legalEn")}</p>`:"")+tpl.innerHTML;
+  $("#legalBody").innerHTML=tpl.innerHTML;
   const st=$("#shipTable",$("#legalBody"));
-  if(st)st.innerHTML=`<table><tr><th>${lang==="cs"?"Země":"Country"}</th><th>${lang==="cs"?"Dopravce":"Carrier"}</th><th>${lang==="cs"?"Cena":"Price"}</th></tr>${SHIPPING.map(s=>`<tr><td>${s.label[lang]}</td><td><span class="phx">${s.carrier}</span></td><td>${shipPrice(s)}</td></tr>`).join("")}</table>`;
+  if(st)st.innerHTML=`<table><tr><th>${t("th_country")}</th><th>${t("th_carrier")}</th><th>${t("th_price")}</th></tr>${SHIPPING.map(s=>`<tr><td>${L(s.label)}</td><td><span class="phx">${L(s.carrier)}</span></td><td>${shipPrice(s)}</td></tr>`).join("")}</table>`;
   $("#legal .mb").scrollTop=0;show("#legal");
 }
 const route=()=>{const h=location.hash.slice(1);if(LEGAL_IDS.includes(h))openLegal(h)};
@@ -1043,6 +1166,8 @@ function renderAll(){
 }
 function applyLang(){
   document.documentElement.lang=lang;
+  document.title=t("title");
+  $("#metaDesc").content=t("desc");$("#ogDesc").content=t("ogdesc");
   $$("[data-t]").forEach(el=>{const v=t(el.dataset.t);if(typeof v==="string")el.textContent=v});
   $$("[data-al]").forEach(el=>el.setAttribute("aria-label",t(el.dataset.al)));
   $$("[data-lang]").forEach(b=>b.setAttribute("aria-pressed",b.dataset.lang===lang));
