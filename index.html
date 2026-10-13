@@ -79,9 +79,8 @@ nav.d a:hover::after{transform:scaleX(1)}
 }
 @media(min-width:801px){.mnav{display:none!important}}
 
-/* slideshow – image banners like Shopify/Dawn (beze změny) */
-.hero{position:relative;background:var(--frame);overflow:hidden;aspect-ratio:16/7}
-@media(max-width:700px){.hero{aspect-ratio:4/5}}
+/* slideshow – image banners like Shopify/Dawn (poměr stran 16:9 podle bannerů) */
+.hero{position:relative;background:var(--frame);overflow:hidden;aspect-ratio:16/9}
 .slide{position:absolute;inset:0;opacity:0;visibility:hidden;transition:opacity .9s ease,visibility .9s;display:block}
 .slide.on{opacity:1;visibility:visible;z-index:1}
 .slide img,.slide .ph{width:100%;height:100%;object-fit:cover}
@@ -785,7 +784,7 @@ Signature (only for paper form) and date: ____________</p>
 const RATES = {CZK:1, EUR:25, USD:23};
 const CURRENCIES = ["CZK","EUR","USD"];
 const SLIDES = [                     // img = cesta/URL fotky banneru
-  {img:""},{img:""},{img:""}
+  {img:"banner1.png"},{img:"banner2.png"},{img:"banner3.png"}
 ];
 // Texty (name, label, title, text, carrier) lze zadat jako řetězec, nebo jako {cs:"…",en:"…"} pro obě jazykové mutace.
 // Kategorie levého menu (pořadí = pořadí v menu). id se používá v URL (?kat=) a u produktů (cat).
@@ -911,7 +910,7 @@ const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
 if(reduce)playing=false;
 const catLabel=id=>id==="all"?t("all"):L(CATEGORIES.find(c=>c.id===id)?.label)||t("all");
 
-/* slideshow (beze změny) */
+/* slideshow */
 function buildHero(){
   $$(".slide").forEach(s=>s.remove());
   const ctrl=$("#ctrl");
@@ -930,7 +929,7 @@ function go(n){
   $$(".slide").forEach((s,i)=>s.classList.toggle("on",i===slide));
   $("#cnt").textContent=(slide+1)+" / "+SLIDES.length;
 }
-function restart(){clearInterval(timer);if(playing)timer=setInterval(()=>go(slide+1),5500)}
+function restart(){clearInterval(timer);if(playing)timer=setInterval(()=>go(slide+1),2000)}
 function syncPP(){
   $("#ctrl").classList.toggle("paused",!playing);
   $("#pp").setAttribute("aria-label",t(playing?"pause":"play"));
