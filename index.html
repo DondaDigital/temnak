@@ -316,6 +316,7 @@ footer{border-top:1px solid var(--line);padding:44px 0 22px;background:var(--bg)
 .ccacts .btn{flex:1 1 140px;width:auto}
 @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}html{scroll-behavior:auto}.rv{opacity:1;transform:none}}
 </style>
+<link rel="stylesheet" href="extra-gallery.css">
 </head>
 <body>
 
@@ -380,6 +381,7 @@ footer{border-top:1px solid var(--line);padding:44px 0 22px;background:var(--bg)
       <div>
         <div class="tb">
           <div><h2 id="catTitle" data-testid="category-title"></h2><div class="cc" id="catCount" data-testid="category-count"></div></div>
+          <a class="xg-btn" href="#extra-gallery" data-testid="extra-gallery-button">EXTRA GALLERY</a>
           <div class="curx" id="curx" data-testid="currency-selector">
             <span class="curx-l" id="curLbl" data-t="curName"></span>
             <div class="curx-seg" id="curOpts" role="group" aria-labelledby="curLbl"></div>
@@ -434,6 +436,41 @@ footer{border-top:1px solid var(--line);padding:44px 0 22px;background:var(--bg)
     </div>
   </div>
 </footer>
+
+<section class="xg" id="xg" aria-hidden="true" aria-label="EXTRA GALLERY" data-testid="extra-gallery-page">
+  <div class="xg-top">
+    <h2 class="xg-title">EXTRA GALLERY</h2>
+    <button class="xg-close" id="xgClose" type="button" aria-label="Zavřít galerii" data-testid="extra-gallery-close"><span aria-hidden="true">✕</span> <span data-xgt="close"></span></button>
+  </div>
+  <div class="xg-main">
+    <div class="xg-stage" id="xgStage" data-testid="xg-stage">
+      <div class="xg-railbar" aria-hidden="true"></div>
+      <div class="xg-floor" aria-hidden="true"></div>
+      <div class="xg-track" id="xgTrack"></div>
+      <p class="xg-hint" data-xgt="hint"></p>
+    </div>
+    <div class="xg-product" id="xgProduct" hidden data-testid="xg-product-view">
+      <button class="xg-backbtn" id="xgBack" type="button" data-testid="xg-back-button">← <span data-xgt="back"></span></button>
+      <div class="xg-pin">
+        <div class="xg-flipcol">
+          <button class="xg-flip" id="xgFlip" type="button" aria-label="Otočit produkt" data-testid="xg-flip-button">
+            <span class="xg-face f" id="xgFront"></span>
+            <span class="xg-face b" id="xgBackF"></span>
+          </button>
+          <p class="xg-fliphint" data-xgt="flip"></p>
+        </div>
+        <div class="xg-info">
+          <h3 id="xgName" data-testid="xg-product-name"></h3>
+          <div class="xg-price" id="xgPrice" data-testid="xg-product-price"></div>
+          <div class="xg-colors" id="xgColors" role="group" aria-label="Color">
+            <button type="button" data-xcolor="white" aria-pressed="true" data-testid="xg-color-white"><i class="sw-w" aria-hidden="true"></i>WHITE</button>
+            <button type="button" data-xcolor="black" aria-pressed="false" data-testid="xg-color-black"><i class="sw-b" aria-hidden="true"></i>BLACK</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
 <div class="ov" id="ov"></div>
 <aside class="drawer" id="drawer" aria-hidden="true" aria-label="Nákupní taška" data-al="cart" data-testid="cart-drawer">
@@ -1216,6 +1253,7 @@ applyLang();restart();
 if(consent)activateScripts();else showBanner();
 route();
 </script>
-<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"7f7b0fd8732c4326aae4b9d58d5c514a","spa":2}' crossorigin="anonymous"></script>
+<script src="extra-gallery.js" defer></script>
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/vce701823e78c4301a35b7e07294d87301792088814092" integrity="sha512-UKNk8GbxkABxKcXYuLkO16EleLGUkcvJWtpSNmExE0Too3ZaFAxTscNWEc1OdAv5/BikHawapSCaiD2XCmp+Bw==" data-cf-beacon='{"version":"2024.11.0","token":"7f7b0fd8732c4326aae4b9d58d5c514a","spa":2}' crossorigin="anonymous"></script>
 </body>
 </html>
