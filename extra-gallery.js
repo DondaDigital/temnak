@@ -3,148 +3,233 @@
 "use strict";
 
 /* ============ UPRAVTE ZDE ============
-   price v CZK (0 = zobrazí se „Připravujeme“). color = barva na věšáku.
-   Vlastní fotky: img:{white:{front:"a.png",back:"b.png"},black:{front:"c.png",back:"d.png"}}
-   (když fotka chybí, nakreslí se ilustrace). */
-const XG_ITEMS=[
- {id:"h1",type:"hoodie",color:"black",name:{cs:"Mikina TEMNAK 1",en:"TEMNAK Hoodie 1"},price:0,img:{}},
- {id:"t1",type:"tee",color:"white",name:{cs:"Tričko TEMNAK 1",en:"TEMNAK Tee 1"},price:0,img:{}},
- {id:"h2",type:"hoodie",color:"white",name:{cs:"Mikina TEMNAK 2",en:"TEMNAK Hoodie 2"},price:0,img:{}},
- {id:"t2",type:"tee",color:"black",name:{cs:"Tričko TEMNAK 2",en:"TEMNAK Tee 2"},price:0,img:{}},
- {id:"h3",type:"hoodie",color:"black",name:{cs:"Mikina TEMNAK 3",en:"TEMNAK Hoodie 3"},price:0,img:{}},
- {id:"t3",type:"tee",color:"white",name:{cs:"Tričko TEMNAK 3",en:"TEMNAK Tee 3"},price:0,img:{}}
-];
+   Kousky v galerii se berou automaticky z PRODUCTS v index.html (kategorie Mikiny a Trička):
+   název, cena i okno s velikostmi jsou tedy stejné jako v obchodě.
+   XG_IMG = vlastní fotky/cut-outy zavěšené na ramínku (průhledné PNG), podle id produktu:
+   XG_IMG={1:{white:{front:"mikina1-w-front.png",back:"mikina1-w-back.png"},black:{front:"…",back:"…"}}}
+   Bez fotky se nakreslí ilustrace (koncept, ne skutečný produkt). */
+const XG_IMG={};
+const XG_TYPE={mikiny:"hoodie",tricka:"tee"};
+const XG_COLORS=["black","white"];          // barva kousku na věšáku podle pořadí
 const XGT={
- cs:{close:"Zavřít",closeAria:"Zavřít galerii",hint:"Táhni do stran · klepni na kousek",back:"Zpět na věšák",flip:"Klepni na produkt a otoč ho",flipAria:"Otočit produkt",soon:"Připravujeme"},
- en:{close:"Close",closeAria:"Close gallery",hint:"Drag sideways · tap an item",back:"Back to the rail",flip:"Tap the product to flip it",flipAria:"Flip product",soon:"Coming soon"}
+ cs:{close:"Zavřít",closeAria:"Zavřít galerii",hint:"Najeď na kousek · klikni pro detail",view:"Zobrazit",buy:"Vybrat velikost",
+  backRack:"Zpět na věšák",sideF:"Přední",sideB:"Zadní",prev:"Předchozí kousek",next:"Další kousek",flipAria:"Otočit kousek",
+  white:"Bílá",black:"Černá",soon:"Připravujeme",empty:"Zatím tu nic nevisí."},
+ en:{close:"Close",closeAria:"Close gallery",hint:"Hover an item · click for details",view:"View",buy:"Choose size",
+  backRack:"Back to the rail",sideF:"Front",sideB:"Back",prev:"Previous item",next:"Next item",flipAria:"Turn the item",
+  white:"White",black:"Black",soon:"Coming soon",empty:"Nothing is hanging here yet."}
 };
 /* ===================================== */
 
-const $=(s,r=document)=>r.querySelector(s);
-const root=$("#xg"),track=$("#xgTrack"),prod=$("#xgProduct"),flip=$("#xgFlip");
-if(!root||!track)return;
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const root=$("#xg"),rack=$("#xgRack");
+if(!root||!rack)return;
+const cap=$("#xgCap"),detail=$("#xgDetail"),box=$("#xgBox"),flipEl=$("#xgFlip");
+const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
 const lg=()=>document.documentElement.lang==="en"?"en":"cs";
 const tx=k=>XGT[lg()][k];
 const L=o=>o&&typeof o==="object"?(o[lg()]??o.cs??""):(o??"");
-const price=it=>it.price>0?(typeof money==="function"?money(it.price):it.price+" Kč"):tx("soon");
-const byId=id=>XG_ITEMS.find(i=>i.id===id);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 
-let curItem=null,curColor="white",pushed=false,opener=null,moved=false;
+let items=[],active=0,idx=-1,color="black",flipped=false,pushed=false,opener=null;
 
-/* ---------- ilustrace oblečení ---------- */
-function garment(it,color,side){
-  const im=it.img&&it.img[color]&&it.img[color][side];
-  if(im)return `<img src="${esc(im)}" alt="${esc(L(it.name))}" draggable="false" loading="lazy">`;
-  const c=color==="black"?{f:"#151515",s:"#555",ink:"#fff"}:{f:"#fafafa",s:"#1a1a1a",ink:"#121212"};
-  const hood=it.type==="hoodie",front=side==="front";
-  let body,det;
-  if(hood){
-    body="M70 18 L30 36 L10 122 L36 130 L44 100 L44 208 L156 208 L156 100 L164 130 L190 122 L170 36 L130 18 C124 40 112 52 100 52 C88 52 76 40 70 18Z";
-    det=front?'<path d="M70 18C72 4 128 4 130 18M76 22C80 40 90 50 100 50C110 50 120 40 124 22M92 50L90 84M108 50L110 84M66 150H134L142 188H58Z"/>'
-             :'<path d="M70 18C76 30 124 30 130 18M76 22C84 36 116 36 124 22"/>';
-    det+='<path d="M44 198H156M14 112L38 120M186 112L162 120"/>';
+function list(){
+  const P=typeof PRODUCTS!=="undefined"?PRODUCTS:[];
+  return P.filter(p=>XG_TYPE[p.cat]).map((p,i)=>({id:String(p.id),pid:p.id,type:XG_TYPE[p.cat],p,color:XG_COLORS[i%2],img:XG_IMG[p.id]||null}));
+}
+const nameOf=it=>L(it.p.name);
+const priceOf=it=>it.p.price>0&&typeof money==="function"?money(it.p.price):tx("soon");
+
+/* ---------- kresba oblečení (ilustrace, dokud nejsou fotky) ---------- */
+function ribs(x0,x1,y0,y1,step,col){let d="";for(let x=x0+step;x<x1;x+=step)d+=`M${x} ${y0}V${y1}`;return `<path d="${d}" stroke="${col}" stroke-width="1" fill="none"/>`}
+const HANGER='<path d="M120 44V30C120 21 129 18 129 10C129 3.5 122 1.5 118.5 4.5C116 6.7 116.5 10.5 119.5 12.5" fill="none" stroke="#9c9c9c" stroke-width="2.4" stroke-linecap="round"/><path d="M120 44V30" stroke="#fff" stroke-opacity=".6" stroke-width=".8" fill="none"/><rect x="112" y="40" width="16" height="9" rx="2.5" fill="#3b2a21"/><path d="M120 46C98 46 62 56 34 75L38 83C66 67 100 57 120 57C140 57 174 67 202 83L206 75C178 56 142 46 120 46Z" fill="url(#xgWood)" stroke="#1d130e" stroke-width=".6"/>';
+function garment(it,col,side){
+  const im=it.img&&it.img[col]&&it.img[col][side];
+  if(im)return `<img src="${esc(im)}" alt="${esc(nameOf(it))}" draggable="false" loading="lazy">`;
+  const W=col==="white",front=side==="front",hood=it.type==="hoodie";
+  const C=W?{f:"#f6f6f3",s:"rgba(0,0,0,.38)",rib:"#e4e4e0",lin:"#cdcdc8",fold:"rgba(0,0,0,.09)",ink:"#121212",str:"#ecece8",rl:"rgba(0,0,0,.12)"}
+           :{f:"#171717",s:"rgba(255,255,255,.24)",rib:"#0d0d0d",lin:"#040404",fold:"rgba(255,255,255,.075)",ink:"#f4f4f4",str:"#8c8c8c",rl:"rgba(255,255,255,.1)"};
+  const font='font-family="Helvetica Neue,Helvetica,Arial,sans-serif" font-weight="800" text-anchor="middle"';
+  const shade=d=>`<path d="${d}" fill="url(#xgShade)"/><path d="${d}" fill="url(#xgShadeV)"/>`;
+  let s=HANGER;
+  if(!hood){
+    const neck=front?"C140 70 130 76 120 76C110 76 100 70 94 54Z":"C140 59 130 61 120 61C110 61 100 59 94 54Z";
+    const P="M94 54L48 72L18 122L48 138L66 112V256H174V112L192 138L222 122L192 72L146 54"+neck;
+    s+=`<path d="${P}" fill="${C.f}" stroke="${C.s}" stroke-width="1"/>`+shade(P)
+      +`<g fill="none" stroke="${C.fold}" stroke-width="2.2" stroke-linecap="round"><path d="M92 92C98 140 90 196 96 250"/><path d="M148 96C142 150 152 200 146 252"/><path d="M120 120C122 170 118 210 122 252" stroke-width="1.4"/><path d="M56 106L40 128M184 106L200 128"/></g>`
+      +`<g fill="none" stroke="${C.rl}" stroke-width="1" stroke-dasharray="2 3"><path d="M66 247H174"/><path d="M20 118L50 134M220 118L190 134"/></g>`
+      +(front?`<path d="M95 55C101 70 111 76 120 76C129 76 139 70 145 55" fill="none" stroke="${C.rib}" stroke-width="6"/><path d="M92 55C99 73 110 79 120 79C130 79 141 73 148 55" fill="none" stroke="${C.s}" stroke-width=".8"/>`
+             :`<path d="M95 55C106 59 134 59 145 55" fill="none" stroke="${C.rib}" stroke-width="5"/>`)
+      +(front?`<text x="120" y="150" ${font} font-size="19" letter-spacing="3" fill="${C.ink}">TEMNAK</text>`
+             :`<text x="120" y="132" ${font} font-size="20" letter-spacing="3" fill="${C.ink}">TEMNAK</text><text x="120" y="148" ${font} font-weight="500" font-size="7" letter-spacing="3" fill="${C.ink}">OFFICIAL MERCH</text>`);
   }else{
-    body="M70 22 L22 46 L40 88 L60 79 L60 206 L140 206 L140 79 L160 88 L178 46 L130 22 C124 36 113 42 100 42 C87 42 76 36 70 22Z";
-    det=front?'<path d="M74 24C80 38 90 46 100 46C110 46 120 38 126 24"/>':'<path d="M74 24C84 31 116 31 126 24"/>';
+    const B="M92 52L48 68C34 100 30 170 34 232L64 238C66 200 66 170 70 130V252H170V130C174 170 174 200 176 238L206 232C210 170 206 100 192 68L148 52Z";
+    s+=`<path d="${B}" fill="${C.f}" stroke="${C.s}" stroke-width="1"/>`+shade(B)
+      +`<path d="M70 238H170V252H70Z" fill="${C.rib}" stroke="${C.s}" stroke-width=".6"/>`+ribs(70,170,238,252,6,C.rl)
+      +`<path d="M33 218L65 224L64 238L34 232Z" fill="${C.rib}" stroke="${C.s}" stroke-width=".6"/><path d="M207 218L175 224L176 238L206 232Z" fill="${C.rib}" stroke="${C.s}" stroke-width=".6"/>`
+      +`<g fill="none" stroke="${C.fold}" stroke-width="2" stroke-linecap="round"><path d="M70 130C67 170 66 205 64 238"/><path d="M170 130C173 170 174 205 176 238"/><path d="M100 120C104 170 98 215 102 232" stroke-width="1.6"/><path d="M142 120C138 170 144 215 140 232" stroke-width="1.6"/></g>`;
+    if(front){
+      const H="M86 58C84 38 100 27 120 27C140 27 156 38 154 58C146 74 134 80 120 80C106 80 94 74 86 58Z";
+      s+=`<path d="${H}" fill="${C.f}" stroke="${C.s}" stroke-width="1"/>`+shade(H)
+        +`<path d="M95 55C99 42 110 37 120 37C130 37 141 42 145 55C139 68 130 73 120 73C110 73 101 68 95 55Z" fill="${C.lin}" stroke="${C.s}" stroke-width=".8"/>`
+        +`<path d="M108 74C107 96 106 112 106 128M132 74C133 98 135 114 135 132" stroke="${C.str}" stroke-width="3" fill="none" stroke-linecap="round"/><rect x="104" y="128" width="4" height="9" rx="2" fill="#777"/><rect x="133" y="132" width="4" height="9" rx="2" fill="#777"/>`
+        +`<path d="M82 178H158L170 232H70Z" fill="none" stroke="${C.s}" stroke-width=".9"/><path d="M82 178H158" stroke="${C.fold}" stroke-width="2.4"/>`
+        +`<text x="120" y="162" ${font} font-size="14" letter-spacing="2.6" fill="${C.ink}">TEMNAK</text>`;
+    }else{
+      const H="M80 56C80 36 100 26 120 26C140 26 160 36 160 56C160 92 142 122 120 122C98 122 80 92 80 56Z";
+      s+=`<path d="${H}" fill="${C.f}" stroke="${C.s}" stroke-width="1"/>`+shade(H)+`<path d="M120 30V118" stroke="${C.fold}" stroke-width="2" fill="none"/>`
+        +`<text x="120" y="176" ${font} font-size="24" letter-spacing="3.5" fill="${C.ink}">TEMNAK</text><text x="120" y="192" ${font} font-weight="500" font-size="7" letter-spacing="3" fill="${C.ink}">OFFICIAL MERCH</text>`;
+    }
   }
-  const txt=front
-    ?`<text x="100" y="${hood?116:112}" font-size="${hood?15:16}" letter-spacing="2.5">TEMNAK</text>`
-    :`<text x="100" y="${hood?100:98}" font-size="17" letter-spacing="3">TEMNAK</text><text x="100" y="${hood?114:112}" font-size="6.5" font-weight="400" letter-spacing="2.5">OFFICIAL MERCH</text>`;
-  return `<svg viewBox="0 0 200 220" aria-hidden="true"><g fill="${c.f}" stroke="${c.s}" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"><path d="${body}"/><g fill="none">${det}</g></g><g fill="${c.ink}" font-family="Helvetica Neue,Helvetica,Arial,sans-serif" font-weight="700" text-anchor="middle">${txt}</g></svg>`;
+  return `<svg viewBox="0 0 240 300" aria-hidden="true">${s}</svg>`;
 }
-const HANGER='<svg class="xg-hanger" viewBox="0 0 60 40" aria-hidden="true"><path d="M30 36L30 24C30 15 40 15 40 8C40 3 33 0 29 3" fill="none" stroke="#6a6a6a" stroke-width="2" stroke-linecap="round"/><path d="M30 30L4 38H56Z" fill="none" stroke="#6a6a6a" stroke-width="2" stroke-linejoin="round"/></svg>';
 
-/* ---------- vykreslení ---------- */
-function applyT(){
-  document.querySelectorAll("#xg [data-xgt]").forEach(el=>{el.textContent=tx(el.dataset.xgt)});
-  $("#xgClose").setAttribute("aria-label",tx("closeAria"));
-  flip.setAttribute("aria-label",tx("flipAria"));
+/* ---------- věšák ---------- */
+function renderRack(){
+  items=list();
+  if(!items.length){rack.innerHTML=`<p class="xg-empty">${esc(tx("empty"))}</p>`;cap.style.visibility="hidden";return}
+  cap.style.visibility="";
+  active=Math.max(0,Math.min(active,items.length-1));
+  rack.innerHTML=`<div class="xg-rackin"><i class="xg-brk l"></i><i class="xg-brk r"></i>`+items.map((it,i)=>
+    `<button type="button" class="xg-it${i===active?" on":""}" style="--i:${i}" data-i="${i}" aria-label="${esc(nameOf(it)+", "+priceOf(it))}" data-testid="xg-item-${it.id}">
+      <span class="xg-sw"><span class="xg-gm" style="--ry:${i%2?-72:72}deg">${garment(it,it.color,"front")}</span></span></button>`).join("")+`</div>`;
 }
-function renderStage(){
-  const sl=track.scrollLeft,fid=document.activeElement&&document.activeElement.dataset&&document.activeElement.dataset.id;
-  track.innerHTML=XG_ITEMS.map((it,i)=>`<button type="button" class="xg-item" style="--i:${i}" data-id="${it.id}" aria-label="${esc(L(it.name)+", "+price(it))}" data-testid="xg-item-${it.id}">
-    <span class="xg-sway">${HANGER}<span class="xg-g">${garment(it,it.color||"white","front")}</span></span>
-    <span class="xg-lbl"><b>${esc(L(it.name))}</b><span>${esc(price(it))}</span></span></button>`).join("");
-  track.scrollLeft=sl;
-  if(fid&&root.classList.contains("on")&&!root.classList.contains("pv")){const b=track.querySelector(`[data-id="${fid}"]`);b&&b.focus({preventScroll:true})}
+function setActive(i,scroll){
+  if(!items[i])return;
+  const changed=i!==active;active=i;
+  $$(".xg-it",rack).forEach((b,j)=>b.classList.toggle("on",j===i));
+  const it=items[i];
+  $("#xgCapName").textContent=nameOf(it);$("#xgCapPrice").textContent=priceOf(it);
+  if(changed){cap.classList.remove("xgcap-in");void cap.offsetWidth;cap.classList.add("xgcap-in")}
+  if(scroll){const b=$(`.xg-it[data-i="${i}"]`,rack);b&&b.scrollIntoView({inline:"center",block:"nearest",behavior:reduce?"auto":"smooth"})}
 }
-function renderFaces(){
-  if(!curItem)return;
-  $("#xgFront").innerHTML=garment(curItem,curColor,"front");
-  $("#xgBackF").innerHTML=garment(curItem,curColor,"back");
-  $("#xgName").textContent=L(curItem.name);
-  $("#xgPrice").textContent=price(curItem);
-  document.querySelectorAll("#xgColors [data-xcolor]").forEach(b=>b.setAttribute("aria-pressed",b.dataset.xcolor===curColor));
+
+/* ---------- detail ---------- */
+function renderDetail(){
+  const it=items[idx];if(!it)return;const n=items.length;
+  $("#xgFront").innerHTML=garment(it,color,"front");
+  $("#xgBackF").innerHTML=garment(it,color,"back");
+  const pv=items[(idx-1+n)%n],nx=items[(idx+1)%n];
+  $("#xgGL").innerHTML=n>1?garment(pv,pv.color,"front"):"";
+  $("#xgGR").innerHTML=n>1?garment(nx,nx.color,"front"):"";
+  $("#xgTags").innerHTML=["white","black"].map(c=>`<button type="button" class="xg-tag ${c}" data-c="${c}" aria-pressed="${c===color}" aria-label="${esc(tx(c))}" data-testid="xg-tag-${c}"><span>${esc(tx(c))}</span></button>`).join("");
+  $("#xgName").textContent=nameOf(it);$("#xgPrice").textContent=priceOf(it);
+  flipEl.classList.toggle("flipped",flipped);
+  const seg=$("#xgSeg");seg.style.setProperty("--pos",flipped?1:0);
+  $$("button",seg).forEach(b=>b.setAttribute("aria-pressed",(b.dataset.side==="back")===flipped));
+  $("#xgPrev").hidden=$("#xgNext").hidden=n<2;
 }
-function refresh(){applyT();renderStage();renderFaces()}
+function setFlip(f){flipped=f;flipEl.classList.toggle("flipped",f);const seg=$("#xgSeg");seg.style.setProperty("--pos",f?1:0);$$("button",seg).forEach(b=>b.setAttribute("aria-pressed",(b.dataset.side==="back")===f))}
+function nav(d){
+  const n=items.length;if(n<2)return;
+  box.style.setProperty("--sx",d>0?"30px":"-30px");
+  idx=(idx+d+n)%n;color=items[idx].color;flipped=false;
+  history.replaceState(null,"",location.pathname+location.search+"#extra-gallery/"+items[idx].id);
+  renderDetail();box.classList.remove("swap");void box.offsetWidth;box.classList.add("swap");
+}
 
 /* ---------- zobrazení / skrytí ---------- */
+function applyT(){
+  $$("#xg [data-xgt]").forEach(el=>{el.textContent=tx(el.dataset.xgt)});
+  $("#xgClose").setAttribute("aria-label",tx("closeAria"));
+  $("#xgPrev").setAttribute("aria-label",tx("prev"));$("#xgNext").setAttribute("aria-label",tx("next"));
+  $("#xgFig").setAttribute("aria-label",tx("flipAria"));
+}
 function openUI(){
   if(root.classList.contains("on"))return;
   opener=document.activeElement;
   root.classList.add("on");root.setAttribute("aria-hidden","false");
   document.documentElement.classList.add("xg-lock");
+  setActive(active,true);
   setTimeout(()=>$("#xgClose").focus({preventScroll:true}),80);
 }
 function closeUI(){
   if(!root.classList.contains("on"))return;
   root.classList.remove("on","pv");root.setAttribute("aria-hidden","true");
   document.documentElement.classList.remove("xg-lock");
-  prod.hidden=true;curItem=null;pushed=false;
+  detail.hidden=true;idx=-1;pushed=false;
   if(opener&&opener.focus)try{opener.focus({preventScroll:true})}catch(e){}
 }
 function showStage(){
-  const had=curItem;
-  root.classList.remove("pv");prod.hidden=true;curItem=null;pushed=false;
-  if(had){const b=track.querySelector(`[data-id="${had.id}"]`);b&&b.focus({preventScroll:true})}
+  const had=root.classList.contains("pv")?idx:-1;
+  root.classList.remove("pv");detail.hidden=true;pushed=false;
+  if(had>=0){active=had;idx=-1;setActive(had,true);const b=$(`.xg-it[data-i="${had}"]`,rack);b&&b.focus({preventScroll:true})}
+  idx=-1;
 }
-function showProduct(it){
-  if(curItem===it&&root.classList.contains("pv"))return;
-  curItem=it;curColor="white";
-  flip.classList.remove("flipped");flip.setAttribute("aria-pressed","false");
-  renderFaces();
-  root.classList.add("pv");prod.hidden=false;prod.scrollTop=0;
+function showDetail(i){
+  if(root.classList.contains("pv")&&idx===i)return;
+  idx=i;color=items[i].color;flipped=false;renderDetail();
+  root.classList.add("pv");detail.hidden=false;
+  box.classList.remove("swap");void box.offsetWidth;
   setTimeout(()=>$("#xgBack").focus({preventScroll:true}),60);
 }
 function sync(){
   const h=location.hash;
   if(h==="#extra-gallery"||h.indexOf("#extra-gallery/")===0){
     openUI();
-    const it=byId(h.split("/")[1]||"");
-    it?showProduct(it):showStage();
+    const id=h.split("/")[1]||"",i=id?items.findIndex(x=>x.id===id):-1;
+    i>=0?showDetail(i):showStage();
   }else closeUI();
 }
-function closeGallery(){
-  history.replaceState(null,"",location.pathname+location.search);
-  sync();
-}
+function closeGallery(){history.replaceState(null,"",location.pathname+location.search);sync()}
 function goBack(){
   if(pushed)history.back();
   else{history.replaceState(null,"",location.pathname+location.search+"#extra-gallery");sync()}
 }
+function openDetail(id){pushed=true;location.hash="#extra-gallery/"+id}
 
 /* ---------- události ---------- */
 $("#xgClose").addEventListener("click",closeGallery);
 $("#xgBack").addEventListener("click",goBack);
-flip.addEventListener("click",()=>{const f=flip.classList.toggle("flipped");flip.setAttribute("aria-pressed",f)});
-$("#xgColors").addEventListener("click",e=>{const b=e.target.closest("[data-xcolor]");if(!b)return;curColor=b.dataset.xcolor;renderFaces()});
-track.addEventListener("click",e=>{
-  if(moved){moved=false;e.preventDefault();e.stopPropagation();return}
-  const b=e.target.closest(".xg-item");if(!b)return;
-  pushed=true;location.hash="#extra-gallery/"+b.dataset.id;
-},true);
+$("#xgPrev").addEventListener("click",()=>nav(-1));
+$("#xgNext").addEventListener("click",()=>nav(1));
+$("#xgFig").addEventListener("click",()=>setFlip(!flipped));
+$("#xgSeg").addEventListener("click",e=>{const b=e.target.closest("[data-side]");if(b)setFlip(b.dataset.side==="back")});
+$("#xgTags").addEventListener("click",e=>{
+  const b=e.target.closest("[data-c]");if(!b||b.dataset.c===color)return;
+  color=b.dataset.c;renderDetail();
+});
+$("#xgBuy").addEventListener("click",()=>{
+  const it=items[idx];if(!it)return;
+  closeGallery();
+  if(typeof openModal==="function")setTimeout(()=>openModal(it.pid),90);
+});
+$("#xgCapBtn").addEventListener("click",()=>{if(items[active])openDetail(items[active].id)});
+rack.addEventListener("pointerover",e=>{
+  if(e.pointerType!=="mouse")return;
+  const b=e.target.closest(".xg-it");if(b&&+b.dataset.i!==active)setActive(+b.dataset.i);
+});
+/* myš: kousek je aktivní už po najetí, klik otevře detail. Dotyk: 1. klepnutí kousek vysune, 2. klepnutí otevře detail. */
+let downActive=-1;
+rack.addEventListener("pointerdown",e=>{const b=e.target.closest(".xg-it");downActive=b?active:-1});
+rack.addEventListener("click",e=>{
+  const b=e.target.closest(".xg-it");if(!b)return;
+  const i=+b.dataset.i,kbd=e.detail===0;
+  if(kbd||downActive===i)openDetail(items[i].id);else setActive(i,true);
+  downActive=-1;
+});
+rack.addEventListener("focusin",e=>{const b=e.target.closest(".xg-it");if(b)setActive(+b.dataset.i)});
 window.addEventListener("hashchange",sync);
+
+/* swipe na dotykových zařízeních */
+let tx0=0,ty0=0;
+detail.addEventListener("touchstart",e=>{tx0=e.touches[0].clientX;ty0=e.touches[0].clientY},{passive:true});
+detail.addEventListener("touchend",e=>{
+  const dx=e.changedTouches[0].clientX-tx0,dy=e.changedTouches[0].clientY-ty0;
+  if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy)*1.4)nav(dx<0?1:-1);
+});
+
 document.addEventListener("keydown",e=>{
   if(!root.classList.contains("on"))return;
-  if(e.key==="Escape"){root.classList.contains("pv")?goBack():closeGallery();return}
-  if((e.key==="ArrowRight"||e.key==="ArrowLeft")&&!root.classList.contains("pv")){
-    const items=[...track.querySelectorAll(".xg-item")],i=items.indexOf(document.activeElement);
-    if(i<0)return;e.preventDefault();
-    const n=items[i+(e.key==="ArrowRight"?1:-1)];if(n){n.focus();n.scrollIntoView({inline:"center",block:"nearest",behavior:"smooth"})}
+  const pv=root.classList.contains("pv");
+  if(e.key==="Escape"){pv?goBack():closeGallery();return}
+  if(e.key==="ArrowRight"||e.key==="ArrowLeft"){
+    const d=e.key==="ArrowRight"?1:-1;
+    if(pv){nav(d);e.preventDefault()}
+    else if(items.length){const i=Math.max(0,Math.min(items.length-1,active+d));setActive(i,true);const b=$(`.xg-it[data-i="${i}"]`,rack);b&&b.focus({preventScroll:true});e.preventDefault()}
   }
-  if(e.key==="Tab"){ /* focus zůstává uvnitř galerie */
-    const f=[...root.querySelectorAll("button:not([disabled])")].filter(x=>x.offsetParent!==null&&getComputedStyle(x).visibility!=="hidden");
+  if(e.key==="Tab"){
+    const f=$$("button:not([disabled])",root).filter(x=>!x.hidden&&x.offsetParent!==null&&getComputedStyle(x).visibility!=="hidden");
     if(!f.length)return;
     const a=f[0],z=f[f.length-1];
     if(e.shiftKey&&(document.activeElement===a||!root.contains(document.activeElement))){e.preventDefault();z.focus()}
@@ -152,23 +237,14 @@ document.addEventListener("keydown",e=>{
   }
 });
 
-/* tažení myší + kolečko myši = posun do stran (na telefonu funguje nativní swipe) */
-let down=false,sx=0,sl=0;
-track.addEventListener("pointerdown",e=>{if(e.pointerType!=="mouse"||e.button!==0)return;down=true;moved=false;sx=e.clientX;sl=track.scrollLeft});
-track.addEventListener("pointermove",e=>{
-  if(!down)return;const dx=e.clientX-sx;
-  if(!moved&&Math.abs(dx)>5){moved=true;track.classList.add("drag");try{track.setPointerCapture(e.pointerId)}catch(_){}}
-  if(moved)track.scrollLeft=sl-dx;
-});
-["pointerup","pointercancel"].forEach(ev=>track.addEventListener(ev,()=>{down=false;track.classList.remove("drag");setTimeout(()=>{moved=false},0)}));
-track.addEventListener("wheel",e=>{
-  if(Math.abs(e.deltaY)>Math.abs(e.deltaX)&&track.scrollWidth>track.clientWidth){track.scrollLeft+=e.deltaY;e.preventDefault()}
-},{passive:false});
-
 /* přepočet při změně jazyka / měny (hlavní skript volá applyLang a renderAll) */
+function refresh(){
+  applyT();renderRack();setActive(active);
+  if(root.classList.contains("pv")&&idx>=0)renderDetail();
+}
 ["applyLang","renderAll"].forEach(n=>{
   const f=window[n];
-  if(typeof f==="function")window[n]=function(){const r=f.apply(this,arguments);try{refresh()}catch(e){}return r};
+  if(typeof f==="function")window[n]=function(){const r=f.apply(this,arguments);try{refresh()}catch(e){console.error(e)}return r};
 });
 
 refresh();
