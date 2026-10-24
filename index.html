@@ -438,36 +438,44 @@ footer{border-top:1px solid var(--line);padding:44px 0 22px;background:var(--bg)
 </footer>
 
 <section class="xg" id="xg" aria-hidden="true" aria-label="EXTRA GALLERY" data-testid="extra-gallery-page">
+  <svg class="xg-defs" width="0" height="0" aria-hidden="true" focusable="false"><defs>
+    <linearGradient id="xgShade" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="#000" stop-opacity=".26"/><stop offset=".2" stop-color="#000" stop-opacity="0"/><stop offset=".5" stop-color="#fff" stop-opacity=".1"/><stop offset=".8" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".3"/></linearGradient>
+    <linearGradient id="xgShadeV" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#000" stop-opacity=".1"/><stop offset=".25" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".14"/></linearGradient>
+    <linearGradient id="xgWood" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#5a4235"/><stop offset="1" stop-color="#2a1b14"/></linearGradient>
+  </defs></svg>
   <div class="xg-top">
     <h2 class="xg-title">EXTRA GALLERY</h2>
-    <button class="xg-close" id="xgClose" type="button" aria-label="Zavřít galerii" data-testid="extra-gallery-close"><span aria-hidden="true">✕</span> <span data-xgt="close"></span></button>
+    <button class="xg-close" id="xgClose" type="button" aria-label="Zavřít galerii" data-testid="extra-gallery-close"><span data-xgt="close"></span> <span aria-hidden="true">✕</span></button>
   </div>
   <div class="xg-main">
     <div class="xg-stage" id="xgStage" data-testid="xg-stage">
-      <div class="xg-railbar" aria-hidden="true"></div>
-      <div class="xg-floor" aria-hidden="true"></div>
-      <div class="xg-track" id="xgTrack"></div>
+      <div class="xg-rack" id="xgRack" data-testid="xg-rack"></div>
+      <div class="xg-cap" id="xgCap" aria-live="polite">
+        <b id="xgCapName"></b><span id="xgCapPrice"></span>
+        <button class="xg-pill" id="xgCapBtn" type="button" data-xgt="view" data-testid="xg-view-button"></button>
+      </div>
       <p class="xg-hint" data-xgt="hint"></p>
     </div>
-    <div class="xg-product" id="xgProduct" hidden data-testid="xg-product-view">
-      <button class="xg-backbtn" id="xgBack" type="button" data-testid="xg-back-button">← <span data-xgt="back"></span></button>
-      <div class="xg-pin">
-        <div class="xg-flipcol">
-          <button class="xg-flip" id="xgFlip" type="button" aria-label="Otočit produkt" data-testid="xg-flip-button">
-            <span class="xg-face f" id="xgFront"></span>
-            <span class="xg-face b" id="xgBackF"></span>
-          </button>
-          <p class="xg-fliphint" data-xgt="flip"></p>
-        </div>
-        <div class="xg-info">
-          <h3 id="xgName" data-testid="xg-product-name"></h3>
-          <div class="xg-price" id="xgPrice" data-testid="xg-product-price"></div>
-          <div class="xg-colors" id="xgColors" role="group" aria-label="Color">
-            <button type="button" data-xcolor="white" aria-pressed="true" data-testid="xg-color-white"><i class="sw-w" aria-hidden="true"></i>WHITE</button>
-            <button type="button" data-xcolor="black" aria-pressed="false" data-testid="xg-color-black"><i class="sw-b" aria-hidden="true"></i>BLACK</button>
-          </div>
-        </div>
+    <div class="xg-detail" id="xgDetail" hidden data-testid="xg-product-view">
+      <button class="xg-back" id="xgBack" type="button" data-testid="xg-back-button">← <span data-xgt="backRack"></span></button>
+      <button class="xg-nav prev" id="xgPrev" type="button" aria-label="Předchozí" data-testid="xg-prev"><svg viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button>
+      <button class="xg-nav next" id="xgNext" type="button" aria-label="Další" data-testid="xg-next"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+      <div class="xg-box" id="xgBox">
+        <div class="xg-ghost l" id="xgGL" aria-hidden="true"></div>
+        <div class="xg-ghost r" id="xgGR" aria-hidden="true"></div>
+        <button class="xg-fig" id="xgFig" type="button" aria-label="Otočit kousek" data-testid="xg-flip-button">
+          <span class="xg-shadow" aria-hidden="true"></span>
+          <span class="xg-flip" id="xgFlip"><span class="xg-face f" id="xgFront"></span><span class="xg-face b" id="xgBackF"></span></span>
+        </button>
+        <div class="xg-tags" id="xgTags" role="group"></div>
       </div>
+      <h3 class="xg-name" id="xgName" data-testid="xg-product-name"></h3>
+      <div class="xg-seg" id="xgSeg" role="group">
+        <button type="button" data-side="front" aria-pressed="true" data-xgt="sideF" data-testid="xg-side-front"></button>
+        <button type="button" data-side="back" aria-pressed="false" data-xgt="sideB" data-testid="xg-side-back"></button>
+      </div>
+      <div class="xg-price" id="xgPrice" data-testid="xg-product-price"></div>
+      <button class="xg-buy" id="xgBuy" type="button" data-testid="xg-buy-button"><span data-xgt="buy"></span> ↗</button>
     </div>
   </div>
 </section>
